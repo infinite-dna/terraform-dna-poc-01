@@ -1,0 +1,32 @@
+terraform-framework/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+│
+└── modules/
+    ├── resource_group/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    │
+    ├── virtual_network/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    │
+    ├── subnet/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    │
+    ├── vm/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    │
+    └── storage_account/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+ 

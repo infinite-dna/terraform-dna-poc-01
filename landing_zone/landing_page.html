@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Resource Creation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Create Azure Resources</h1>
+    <form id="resourceForm">
+      <label for="environment">Environment:</label>
+      <select id="environment" name="environment">
+        <option value="dev">Development</option>
+        <option value="prod">Production</option>
+      </select><br>
+      <label for="location">Location:</label>
+      <input type="text" id="location" name="location" required><br>
+      <label for="vmType">VM Type:</label>
+      <select id="vmType" name="vmType">
+        <option value="Windows">Windows</option>
+        <option value="Linux">Linux</option>
+      </select><br>
+      <label for="vmAdditionalConfig">Additional Configuration:</label>
+      <input type="text" id="vmAdditionalConfig" name="vmAdditionalConfig"><br>
+      <button type="submit">Create Resources</button>
+    </form>
+    <div id="feedback"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+ 
