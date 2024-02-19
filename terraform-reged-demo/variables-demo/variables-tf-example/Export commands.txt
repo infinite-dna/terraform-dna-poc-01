@@ -1,0 +1,2 @@
+export TF_VAR_resource_group_name="myrg"
+export TF_VAR_location="West US"

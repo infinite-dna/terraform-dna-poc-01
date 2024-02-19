@@ -1,0 +1,1 @@
+terraform import azurerm_virtual_network.example /subscriptions/76e5cae4-686a-4880-b01c-ca42b21a180f/resourceGroups/test-rgg/providers/Microsoft.Network/virtualNetworks/test-vnetv
