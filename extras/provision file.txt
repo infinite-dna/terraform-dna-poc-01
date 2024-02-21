@@ -1,0 +1,9 @@
+# Null resource to copy PowerShell script to the VM
+resource "null_resource" "copy_script_to_vm" {
+  provisioner "file" {
+    source      = var.local_script_path
+    destination = "C:\\${basename(var.local_script_path)}"
+  }
+
+  depends_on = [azurerm_virtual_machine.vm]
+}
