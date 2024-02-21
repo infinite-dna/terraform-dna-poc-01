@@ -1,0 +1,18 @@
+resource "azurerm_virtual_machine_extension" "custom_script" {
+  name                 = "copy-file-script"
+  virtual_machine_id   = azurerm_windows_virtual_machine.example.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  settings = <<SETTINGS
+    {
+      "fileUris": [
+        "https://yourstorageaccount.blob.core.windows.net/yourcontainer/yourfile.txt?<SAS_TOKEN>"
+      ],
+      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File script.ps1"
+    }
+SETTINGS
+
+  depends_on = [azurerm_windows_virtual_machine.example]
+}
