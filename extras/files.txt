@@ -14,3 +14,6 @@ SETTINGS
 
   depends_on = [azurerm_windows_virtual_machine.example]
 }
+
+
+Install-Module -Name Az -AllowClobber -Scope CurrentUser
