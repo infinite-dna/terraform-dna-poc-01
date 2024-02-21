@@ -1,0 +1,8 @@
+# Install IIS
+Install-WindowsFeature -Name Web-Server -IncludeManagementTools
+
+# Start the World Wide Web Publishing Service (W3SVC)
+Start-Service W3SVC
+
+# Set the World Wide Web Publishing Service (W3SVC) to start automatically
+Set-Service W3SVC -StartupType 'Automatic'
