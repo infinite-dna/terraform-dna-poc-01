@@ -1,1 +1,15 @@
 Install-WindowsFeature -Name NET-Framework-45-ASPNET, Web-Asp-Net45
+
+#Check version
+# Get installed .NET Framework versions
+$dotNetVersions = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse | Get-ItemProperty -Name Version -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^(?!S)\p{L}'} | Select-Object -ExpandProperty Version
+
+# Output the versions
+if ($dotNetVersions) {
+    Write-Host "Installed .NET Framework Versions:"
+    foreach ($version in $dotNetVersions) {
+        Write-Host "- $version"
+    }
+} else {
+    Write-Host "No .NET Framework versions found."
+}
