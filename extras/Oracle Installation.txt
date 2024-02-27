@@ -23,3 +23,13 @@ Verify Installation:
 
 In your code, you can now use the Oracle Data Provider for .NET (ODP.NET) to connect to your Oracle database. Import the necessary namespaces (Oracle.ManagedDataAccess.Client and Oracle.ManagedDataAccess.Types) and start coding.
 Remember to handle any dependencies and ensure that your application's target framework is compatible with the version of ODP.NET or ODAC you've installed. Additionally, you may need to configure your application to use the appropriate Oracle client configuration files (like tnsnames.ora or sqlnet.ora) if you're connecting to a remote Oracle database.
+
+####################command to connect##############
+sqlplus username/password@//hostname:port/service_name
+username: Your Oracle database username.
+password: Your Oracle database password.
+hostname: The hostname or IP address of the server where Oracle database is running.
+port: The port number where Oracle database listener is listening. The default port for Oracle is 1521.
+service_name: The service name of the Oracle database you want to connect to.
+
+eg : sqlplus scott/tiger@//localhost:1521/ORCL
