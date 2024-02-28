@@ -7,6 +7,8 @@ Install-WindowsFeature -Name Web-Asp-Net47  # Install ASP.NET 4.7 feature for II
 
 # Install IIS Management Console
 Install-WindowsFeature -Name RSAT-Web-Server  # Install Remote Server Administration Tools (RSAT) for managing the Web Server role
+#use if the above does not work# Install IIS Management Console
+#Install-WindowsFeature -Name Web-Mgmt-Console
 
 # Install Application Server role with required features
 Install-WindowsFeature -Name Application-Server  # Install the Application Server role
