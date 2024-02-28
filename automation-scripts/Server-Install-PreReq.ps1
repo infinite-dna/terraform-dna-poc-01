@@ -11,6 +11,7 @@ Install-WindowsFeature -Name RSAT-Web-Server  # Install Remote Server Administra
 #Install-WindowsFeature -Name Web-Mgmt-Console
 
 # Install Application Server role with required features
+###new lineInstall-WindowsFeature -Name NET-Framework-Features -IncludeAllSubFeatur
 Install-WindowsFeature -Name Application-Server  # Install the Application Server role
 Install-WindowsFeature -Name AS-NET-Framework-45-Core  # Install .NET Framework 4.7 feature for Application Server
 Install-WindowsFeature -Name AS-HTTP-Activation  # Install HTTP Activation feature for Application Server
