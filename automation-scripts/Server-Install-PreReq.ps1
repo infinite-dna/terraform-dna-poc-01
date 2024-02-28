@@ -48,7 +48,9 @@ Enable-WindowsOptionalFeature -Online -FeatureName AS-WCF-Services45
 Add-WindowsFeature NET-HTTP-Activation
 
 # Install TCP Activation
-Add-WindowsFeature NET-TCP-Activation
+# Install TCP Activation
+Add-WindowsFeature -Name AS-Net-TCP-Activation
+
 
 # Install WCF Services
 Add-WindowsFeature AS-WCF-Services-45
