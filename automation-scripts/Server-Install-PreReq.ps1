@@ -54,3 +54,13 @@ Add-WindowsFeature -Name AS-Net-TCP-Activation
 
 # Install WCF Services
 Add-WindowsFeature AS-WCF-Services-45
+
+
+# Install .NET Framework 4.7
+Add-WindowsFeature -Name NET-Framework-45-Features -IncludeAllSubFeature
+
+# Install HTTP Activation
+Add-WindowsFeature NET-HTTP-Activation
+
+# Install WCF Services
+Add-WindowsFeature AS-WCF-Services-45
