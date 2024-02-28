@@ -24,3 +24,20 @@ Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-ins
 
 # Remove temporary files
 Remove-Item -Path dotnet-install.ps1
+
+
+### Install .NET Framework 4.x
+Install-WindowsFeature -Name NET-Framework-Core
+
+# Install HTTP Activation
+Install-WindowsFeature -Name Web-Http-Activation
+
+# Install TCP Activation
+Install-WindowsFeature -Name WAS-Net-TCP-Activation45
+
+
+Enable-WindowsOptionalFeature -Online -FeatureName WAS-Net-HTTP-Activation45
+
+Enable-WindowsOptionalFeature -Online -FeatureName WAS-Net-TCP-Activation45
+
+Enable-WindowsOptionalFeature -Online -FeatureName AS-WCF-Services45
