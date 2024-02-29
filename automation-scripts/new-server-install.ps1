@@ -2,6 +2,7 @@
 Install-WindowsFeature -Name Web-Server -IncludeManagementTools
 Install-WindowsFeature -Name Web-Basic-Auth
 Install-WindowsFeature -Name Web-App-Dev
+##Install-WindowsFeature -Name Web-Net-Ext -IncludeAllSubFeature
 Install-WindowsFeature -Name Web-Net-Ext47
 Install-WindowsFeature -Name Web-Asp-Net47
 
@@ -30,4 +31,8 @@ Enable-WindowsOptionalFeature -Online -FeatureName WAS-Net-TCP-Activation45
 
 # Enable WCF Services
 Enable-WindowsOptionalFeature -Online -FeatureName AS-WCF-Services45
+
+
+Enable-WindowsOptionalFeature -Online -FeatureName NetFx4-HTTP-Activation45
+
  
