@@ -1,0 +1,5 @@
+ provisioner "local-exec" {
+    command = "powershell.exe -ExecutionPolicy Bypass -File ${path.module}/your_script.ps1"
+    interpreter = ["PowerShell", "-Command"]
+    elevated_privilege = true  # This will run the PowerShell script as an administrator
+  }
