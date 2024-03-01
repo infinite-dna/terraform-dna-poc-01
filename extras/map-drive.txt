@@ -1,0 +1,2 @@
+# Map the drive
+New-PSDrive -Name "G" -PSProvider "FileSystem" -Root "\\10.155.189.189\DNABK01" -Persist
