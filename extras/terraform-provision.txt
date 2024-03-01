@@ -3,3 +3,13 @@
     interpreter = ["PowerShell", "-Command"]
     elevated_privilege = true  # This will run the PowerShell script as an administrator
   }
+  
+  
+  
+  resource "null_resource" "run_as_admin" {
+  provisioner "local-exec" {
+    command = <<EOT
+      powershell.exe -ExecutionPolicy Bypass -Command "Start-Process -FilePath 'powershell.exe' -ArgumentList '-ExecutionPolicy Bypass -File ${path.module}/your_script.ps1' -Verb RunAs"
+    EOT
+  }
+}
