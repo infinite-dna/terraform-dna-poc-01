@@ -1,0 +1,13 @@
+# Define installation parameters
+$installPath = "C:\PostgreSQL"  # Specify the installation directory
+$password = "YourPassword"      # Specify the PostgreSQL password
+$port = 5432                     # Specify the PostgreSQL port
+
+# Download PostgreSQL installer (adjust the URL if needed)
+$downloadUrl = "https://get.enterprisedb.com/postgresql/postgresql-14.2-1-windows-x64.exe"
+$installerPath = "C:\Temp\postgresql.exe"
+Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath
+
+# Install PostgreSQL silently with specified password and port
+Start-Process -FilePath $installerPath -ArgumentList "--mode unattended --superpassword $password --servicename PostgreSQL --serverport $port --install_runtimes 0" -Wait
+ 
