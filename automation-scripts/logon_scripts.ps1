@@ -1,8 +1,8 @@
 # Define the username
 $username = "windowsadmin"
 
-# Get the SID of the user
-$userSID = (Get-WmiObject Win32_UserAccount | Where-Object { $_.Name -eq $username }).SID
+# Convert username to SID
+$userSID = (New-Object System.Security.Principal.NTAccount($username)).Translate([System.Security.Principal.SecurityIdentifier]).Value
 
 # Get the local security policy
 $secedit = New-Object -ComObject "Microsoft.GroupPolicy.Gpmc"
@@ -20,4 +20,3 @@ $secedit.SetSecuritySettings("Machine", "Account", $settings)
 $secedit.Dispose()
 
 Write-Host "User $username has been granted 'Logon as a service' rights."
- 
