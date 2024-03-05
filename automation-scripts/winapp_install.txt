@@ -1,0 +1,96 @@
+ 
+To automate the entire case of the setup.exe, which involves multiple steps and user interactions, we can use WinAppDriver and PowerShell. Here's how you can do it:
+
+Install and Set Up WinAppDriver:
+
+Download and install WinAppDriver from the official GitHub repository: WinAppDriver Releases.
+Follow the installation instructions provided in the repository's README file.
+Identify UI Elements:
+
+Before automating the installation process, you'll need to identify the UI elements of the setup.exe application that you want to interact with. This can be done using the WinAppDriver Inspect tool or similar UI inspection tools.
+Write PowerShell Script:
+Below is a sample PowerShell script that demonstrates how to automate the installation process using WinAppDriver and PowerShell. This script assumes you have identified the necessary UI elements and their actions.
+
+powershell
+Copy code
+# Start WinAppDriver server
+Start-Process -FilePath "C:\Program Files (x86)\Windows Application Driver\WinAppDriver.exe" -ArgumentList "--port 4723"
+
+# Wait for WinAppDriver server to start
+Start-Sleep -Seconds 10
+
+# Import WinAppDriver module
+Import-Module "$env:ProgramFiles (x86)\Windows Application Driver\Appium\resources\app\node_modules\appium\build\lib\main.js"
+
+# Set up WinAppDriver capabilities
+$capabilities = @{
+    "app" = "C:\my files\setup.exe"  # Path to your setup.exe
+}
+
+# Start a new session with WinAppDriver
+$session = Start-AppDriverSession -Capabilities $capabilities
+
+# Simulate GUI interactions to automate installation
+# Example: Click buttons, enter text, select options, etc.
+# Below is a simplified example assuming the UI elements and actions
+
+# Click "Next" button to start the installation process
+Invoke-AppDriverElementClick -Session $session -Name "NextButton"
+
+# Enter domain\username
+Invoke-AppDriverElementSetValue -Session $session -Name "DomainUsernameField" -Value "domain\username"
+
+# Enter password
+Invoke-AppDriverElementSetValue -Session $session -Name "PasswordField" -Value "password"
+
+# Click "Next" button
+Invoke-AppDriverElementClick -Session $session -Name "NextButton"
+
+# Enter database server
+Invoke-AppDriverElementSetValue -Session $session -Name "DatabaseServerField" -Value "database_server"
+
+# Enter login ID
+Invoke-AppDriverElementSetValue -Session $session -Name "LoginIDField" -Value "login_id"
+
+# Enter database password
+Invoke-AppDriverElementSetValue -Session $session -Name "DatabasePasswordField" -Value "database_password"
+
+# Select "Agent" or "Dashboard"
+Invoke-AppDriverElementClick -Session $session -Name "AgentRadioButton"  # Change as needed
+
+# Click "Next" button
+Invoke-AppDriverElementClick -Session $session -Name "NextButton"
+
+# Select "https" or "http"
+Invoke-AppDriverElementClick -Session $session -Name "HttpsRadioButton"  # Change as needed
+
+# Enter port number
+Invoke-AppDriverElementSetValue -Session $session -Name "PortNumberField" -Value "8080"  # Change as needed
+
+# Click "Next" button
+Invoke-AppDriverElementClick -Session $session -Name "NextButton"
+
+# Click "Install" button
+Invoke-AppDriverElementClick -Session $session -Name "InstallButton"
+
+# Wait for installation to complete
+# Add additional actions as needed
+
+# Close the session
+$session.Close()
+
+# Stop WinAppDriver server
+Stop-Process -Name "WinAppDriver"
+Replace "C:\my files\setup.exe" with the actual path to your setup.exe file. Adjust the element names ("NextButton", "DomainUsernameField", etc.) and actions according to the UI elements of your application.
+
+Run the PowerShell Script:
+Save the PowerShell script to a file (e.g., AutomateInstallation.ps1).
+Open PowerShell with administrative privileges.
+Navigate to the directory containing the script.
+Run the script by typing .\AutomateInstallation.ps1 and pressing Enter.
+This script will automate the installation process of the setup.exe application by interacting with its GUI elements using WinAppDriver and PowerShell. Ensure that you've correctly identified the UI elements and their actions for the script to work effectively.
+
+
+
+
+
