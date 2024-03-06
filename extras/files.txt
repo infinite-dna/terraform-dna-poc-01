@@ -17,3 +17,6 @@ SETTINGS
 
 
 Install-Module -Name Az -AllowClobber -Scope CurrentUser
+
+
+https://textdoc.co/t1C6vALgWeZwj5xQ
