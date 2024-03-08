@@ -39,4 +39,5 @@ finally {
         $connection.Close()
     }
 }
- 
+ $connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=10.2.2.2)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=db01)));User Id=deploymgr;Password=deploymgr;"
+
