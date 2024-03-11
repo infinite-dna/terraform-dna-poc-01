@@ -10,9 +10,17 @@ $acl = Get-Acl -Path $folderPath
 # Get the machine name
 $machineName = $env:COMPUTERNAME
 
-# Create a permission object for the IIS user group to have full control
-$permission = "$machineName\$iisUserGroupName","FullControl","Allow"
-$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($permission)
+# Get the SID for the IIS user group
+$iisUserGroupSID = Get-LocalGroup $iisUserGroupName | Select-Object -ExpandProperty SID
+
+# Check if the IIS user group SID is obtained successfully
+if ($iisUserGroupSID -eq $null) {
+    Write-Host "Error: Unable to retrieve the SID for the $iisUserGroupName group."
+    exit 1
+}
+
+# Create a new access rule for the IIS user group with full control
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($iisUserGroupSID,"FullControl","Allow")
 
 # Add the access rule to the ACL
 $acl.AddAccessRule($accessRule)
