@@ -10,11 +10,12 @@ $acl = Get-Acl -Path $folderPath
 # Get the machine name
 $machineName = $env:COMPUTERNAME
 
-# Add permission for the IIS user group to have full control
+# Create a permission object for the IIS user group to have full control
 $permission = "$machineName\$iisUserGroupName","FullControl","Allow"
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($permission)
+
+# Add the access rule to the ACL
 $acl.AddAccessRule($accessRule)
 
 # Set the modified ACL back to the folder
 Set-Acl -Path $folderPath -AclObject $acl
- 
