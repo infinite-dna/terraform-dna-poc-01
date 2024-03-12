@@ -1,0 +1,14 @@
+resource "azurerm_virtual_machine_extension" "custom_script" {
+  name                 = "customScript"
+  virtual_machine_id   = azurerm_virtual_machine.example.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  settings = <<SETTINGS
+    {
+        "fileUris": ["<URL_to_your_script>"],
+        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -Command \"Start-Process powershell -ArgumentList '-ExecutionPolicy Bypass -File <script_name.ps1>' -Verb RunAs\""
+    }
+SETTINGS
+}
