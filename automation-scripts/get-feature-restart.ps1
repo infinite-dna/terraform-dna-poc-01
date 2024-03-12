@@ -14,3 +14,7 @@ if ($PendingRestart) {
     Write-Host "A system restart is pending due to file rename operations."
 }
  
+
+
+## Remove pending file rename operations from registry
+#Remove-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager' -Name PendingFileRenameOperations -ErrorAction SilentlyContinue
