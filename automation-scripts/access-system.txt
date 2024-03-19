@@ -1,0 +1,29 @@
+# Define the path to the shared folder
+$folderPath = "\\ComputerName\SharedFolder"
+
+# Set share permissions
+$shareName = "SharedFolder"
+$systemAccount = "system"
+$sharePermission = "Read"
+
+# Grant share permissions
+Invoke-Command -ScriptBlock {
+    $acl = Get-Acl $using:folderPath
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($using:systemAccount, $using:sharePermission, "Allow")
+    $acl.SetAccessRule($rule)
+    Set-Acl $using:folderPath $acl
+}
+
+# Set NTFS permissions
+$ntfsPermission = "Read"
+
+# Grant NTFS permissions
+Invoke-Command -ScriptBlock {
+    $acl = Get-Acl $using:folderPath
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($using:systemAccount, $using:ntfsPermission, "Allow")
+    $acl.SetAccessRule($rule)
+    Set-Acl $using:folderPath $acl
+}
+
+# Display confirmation message
+Write-Host "Permissions granted for $systemAccount to access $folderPath."
