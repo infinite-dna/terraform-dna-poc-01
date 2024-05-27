@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Database connection details
+DB_USERNAME="scott"
+DB_PASSWORD="tiger"
+DB_HOST="dbhost.example.com"
+DB_PORT="1521"
+DB_SERVICE="orcl"
+
+# SQL query to execute
+SQL_QUERY="SELECT * FROM employees;"
+
+# Execute the SQL query and capture the result
+RESULT=$(sqlplus -S "$DB_USERNAME/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_SERVICE" <<EOF
+SET PAGESIZE 50000
+SET LINESIZE 32767
+SET FEEDBACK OFF
+SET HEADING ON
+$SQL_QUERY
+EXIT;
+EOF
+)
+
+# Print the result
+echo "$RESULT"
