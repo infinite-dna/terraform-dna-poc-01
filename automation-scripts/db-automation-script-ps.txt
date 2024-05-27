@@ -1,0 +1,33 @@
+# Database connection details
+$DB_USERNAME = "scott"
+$DB_PASSWORD = "tiger"
+$DB_HOST = "dbhost.example.com"
+$DB_PORT = "1521"
+$DB_SERVICE = "orcl"
+
+# SQL query to execute
+$SQL_QUERY = "SELECT * FROM employees;"
+
+# SQL*Plus command
+$sqlplus_command = @"
+SET PAGESIZE 50000
+SET LINESIZE 32767
+SET FEEDBACK OFF
+SET HEADING ON
+$SQL_QUERY
+EXIT;
+"@
+
+# Create a temporary SQL script file
+$temp_sql_file = [System.IO.Path]::GetTempFileName()
+$temp_sql_file_with_extension = "$temp_sql_file.sql"
+Set-Content -Path $temp_sql_file_with_extension -Value $sqlplus_command
+
+# Execute the SQL*Plus command and capture the result
+$result = & sqlplus -S "$DB_USERNAME/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_SERVICE" @"$temp_sql_file_with_extension"
+
+# Remove the temporary SQL script file
+Remove-Item -Path $temp_sql_file_with_extension
+
+# Print the result
+Write-Output $result
