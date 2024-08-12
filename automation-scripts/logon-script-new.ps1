@@ -1,67 +1,87 @@
-# Variables
-$userName = "DOMAIN\Username"  # Replace with the domain and username you want to add
-$policyName = "SeServiceLogonRight"
-$seceditPath = "C:\Windows\Temp\secedit.inf"
+function Add-RightToUser([string] $Username, $Right) {
+    $tmp = New-TemporaryFile
 
-# Debug: Starting the script
-Write-Output "Starting script to add $userName to 'Log on as a service' policy."
+    $TempConfigFile = "$tmp.inf"
+    $TempDbFile = "$tmp.sdb"
 
-# Export the current security policy to a temporary file
-Write-Output "Exporting current security policy to $seceditPath..."
-secedit.exe /export /cfg $seceditPath /areas USER_RIGHTS
+    Write-Host "Getting current policy"
+    secedit /export /cfg $TempConfigFile
 
-# Check if the export was successful
-if (Test-Path $seceditPath) {
-    Write-Output "Policy export successful."
-} else {
-    Write-Error "Failed to export the policy. Exiting script."
-    exit
+    $sid = ((New-Object System.Security.Principal.NTAccount($Username)).Translate([System.Security.Principal.SecurityIdentifier])).Value
+
+    $currentConfig = Get-Content -Encoding ascii $TempConfigFile
+
+    $newConfig = $null
+
+    if ($currentConfig | Select-String -Pattern "^$Right = ") {
+        if ($currentConfig | Select-String -Pattern "^$Right .*$sid.*$") {
+            Write-Host "Already has right"
+        }
+        else {
+            Write-Host "Adding $Right to $Username"
+
+            $newConfig = $currentConfig -replace "^$Right .+", "`$0,*$sid"
+        }
+    }
+    else {
+        Write-Host "Right $Right did not exist in config. Adding $Right to $Username."
+
+        $newConfig = $currentConfig -replace "^\[Privilege Rights\]$", "`$0`n$Right = *$sid"
+    }
+
+    if ($newConfig) {
+        Set-Content -Path $TempConfigFile -Encoding ascii -Value $newConfig
+
+        Write-Host "Validating configuration"
+        $validationResult = secedit /validate $TempConfigFile
+
+        if ($validationResult | Select-String '.*invalid.*') {
+            throw $validationResult;
+        }
+        else {
+            Write-Host "Validation Succeeded"
+        }
+
+        Write-Host "Importing new policy on temp database"
+        secedit /import /cfg $TempConfigFile /db $TempDbFile
+
+        Write-Host "Applying new policy to machine"
+        secedit /configure /db $TempDbFile /cfg $TempConfigFile
+
+        Write-Host "Updating policy"
+        gpupdate /force
+
+        Remove-Item $tmp* -ea 0
+    }
 }
 
-# Read the policy file
-Write-Output "Reading policy content..."
-$policyContent = Get-Content $seceditPath
+# Step 1: Check if user exists
+$username = "cmcuser"
+$userExists = Get-LocalUser -Name $username -ErrorAction SilentlyContinue
 
-# Debug: Show current policy content
-Write-Output "Current policy content:"
-$policyContent | ForEach-Object { Write-Output $_ }
+if (-not $userExists) {
+    # Disable password complexity
+    $passwordPolicyFile = "$env:TEMP\passwordpolicy.inf"
+    secedit /export /cfg $passwordPolicyFile
+    (Get-Content $passwordPolicyFile).replace("PasswordComplexity = 1", "PasswordComplexity = 0") | Set-Content $passwordPolicyFile
+    secedit /configure /db $env:TEMP\secedit.sdb /cfg $passwordPolicyFile /areas SECURITYPOLICY
 
-# Find and update the policy
-$policyIndex = $policyContent.IndexOf("$policyName =")
+    # Define the password
+    $password = ConvertTo-SecureString "cmc" -AsPlainText -Force
 
-if ($policyIndex -ge 0) {
-    Write-Output "Found existing $policyName entry. Updating the entry..."
-    $policyContent[$policyIndex] = $policyContent[$policyIndex] + ",$userName"
-} else {
-    Write-Output "No existing $policyName entry found. Adding a new entry..."
-    $policyContent += "$policyName = $userName"
+    # Create the user
+    New-LocalUser -Name $username -Password $password -FullName "CMC User" -Description "Admin user for CMC services"
+
+    # Add the user to the "Administrators" group
+    Add-LocalGroupMember -Group "Administrators" -Member $username
+
+    # Clean up the temporary files
+    Remove-Item $passwordPolicyFile
 }
 
-# Debug: Show updated policy content
-Write-Output "Updated policy content:"
-$policyContent | ForEach-Object { Write-Output $_ }
+# Use the current machine name
+$currentMachineName = $env:COMPUTERNAME
+$domainUser = "$currentMachineName\$username"
 
-# Write the modified content back to the policy file
-Write-Output "Writing updated policy back to $seceditPath..."
-$policyContent | Set-Content $seceditPath
-
-# Import the modified security policy
-Write-Output "Importing the modified policy..."
-secedit.exe /import /cfg $seceditPath /areas USER_RIGHTS
-
-# Configure the system with the new policy
-Write-Output "Configuring the system with the new policy..."
-secedit.exe /configure /db secedit.sdb /cfg $seceditPath /areas USER_RIGHTS
-
-# Check if the process was successful
-if ($LASTEXITCODE -eq 0) {
-    Write-Output "Successfully updated the 'Log on as a service' policy for $userName."
-} else {
-    Write-Error "Failed to update the policy. Please check the log for details."
-}
-
-# Clean up
-Write-Output "Cleaning up temporary files..."
-Remove-Item $seceditPath
-
-Write-Output "Script completed."
+# Assign "Log on as a service" rights
+Add-RightToUser -Username $domainUser -Right 'SeServiceLogonRight'
