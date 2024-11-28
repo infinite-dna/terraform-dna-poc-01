@@ -1,5 +1,4 @@
 # Define Variables
-$responseFilePath = "C:\temp\client_install.rsp"  # Path to save the response file
 $oracleInstallerPath = "C:\OracleInstaller\setup.exe"  # Path to Oracle installer (update as per your environment)
 $oracleBase = "C:\Oracle"
 $oracleHome = "C:\Oracle\Product\19.0.0\Client_1"
@@ -11,14 +10,6 @@ $customComponents = @(
     "oracle.ntoledb.odp_net_2:19.0.0.0.0",  # Oracle Data Provider for .NET
     "oracle.aspnet2:19.0.0.0.0"        # Oracle Providers for ASP.NET
 )
-$logLevel = "finest"  # Log level for troubleshooting (e.g., "info", "finest")
-
-# Ensure Temp Directory Exists
-$tempDir = Split-Path -Path $responseFilePath
-if (-not (Test-Path -Path $tempDir)) {
-    New-Item -ItemType Directory -Path $tempDir -Force
-    Write-Host "Created temporary directory: $tempDir"
-}
 
 # Validate Oracle Installer Path
 if (-not (Test-Path -Path $oracleInstallerPath)) {
@@ -26,33 +17,21 @@ if (-not (Test-Path -Path $oracleInstallerPath)) {
     exit 1
 }
 
-# Create Response File Content
-$responseFileContent = @"
-oracle.install.responseFileVersion=/oracle/install/rspfmt_clientinstall_response_schema_v19_0_0
-oracle.install.client.installType=$installType
-ORACLE_HOME=$oracleHome
-ORACLE_BASE=$oracleBase
-oracle.install.IsBuiltInAccount=true
-oracle.install.client.customComponents="$($customComponents -join ",")"
-"@
+# Construct Command Line Arguments
+$arguments = @(
+    "-silent",
+    "-responseFile", "NONE",  # No response file will be used
+    "oracle.install.responseFileVersion=/oracle/install/rspfmt_clientinstall_response_schema_v19_0_0",
+    "oracle.install.client.installType=$installType",
+    "ORACLE_HOME=$oracleHome",
+    "ORACLE_BASE=$oracleBase",
+    "oracle.install.IsBuiltInAccount=true",
+    "oracle.install.client.customComponents=""$($customComponents -join ",")"""
+)
 
-# Save the Response File
+# Start Silent Installation
 try {
-    $responseFileContent | Set-Content -Path $responseFilePath -Encoding UTF8
-    Write-Host "Response file created at $responseFilePath"
-} catch {
-    Write-Error "Failed to create response file: $_"
-    exit 1
-}
-
-# Run Oracle Installer in Silent Mode
-try {
-    $arguments = @(
-        "-silent",
-        "-responseFile", "`"$responseFilePath`"",
-        "-logLevel", $logLevel
-    )
-    Write-Host "Starting Oracle Client installation..."
+    Write-Host "Starting Oracle Client installation without response file..."
     Start-Process -FilePath $oracleInstallerPath -ArgumentList $arguments -Wait -NoNewWindow
     Write-Host "Oracle Client installation completed successfully."
 } catch {
