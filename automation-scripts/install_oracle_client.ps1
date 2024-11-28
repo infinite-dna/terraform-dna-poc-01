@@ -8,16 +8,22 @@ $customComponents = @(
     "oracle.sqlplus:19.0.0.0.0",       # SQL*Plus
     "oracle.jdbc:19.0.0.0.0",          # JDBC/THIN Interfaces
     "oracle.ldap.client:19.0.0.0.0",   # Oracle Internet Directory Client
-    "oracle.ntoledb:19.0.0.0.0",       # Oracle Provider for OLE DB
     "oracle.ntoledb.odp_net_2:19.0.0.0.0",  # Oracle Data Provider for .NET
     "oracle.aspnet2:19.0.0.0.0"        # Oracle Providers for ASP.NET
-)  # Modify as needed for your custom components
+)
 $logLevel = "finest"  # Log level for troubleshooting (e.g., "info", "finest")
 
 # Ensure Temp Directory Exists
 $tempDir = Split-Path -Path $responseFilePath
 if (-not (Test-Path -Path $tempDir)) {
     New-Item -ItemType Directory -Path $tempDir -Force
+    Write-Host "Created temporary directory: $tempDir"
+}
+
+# Validate Oracle Installer Path
+if (-not (Test-Path -Path $oracleInstallerPath)) {
+    Write-Error "Oracle installer not found at $oracleInstallerPath. Please verify the path."
+    exit 1
 }
 
 # Create Response File Content
@@ -26,17 +32,16 @@ oracle.install.responseFileVersion=/oracle/install/rspfmt_clientinstall_response
 oracle.install.client.installType=$installType
 ORACLE_HOME=$oracleHome
 ORACLE_BASE=$oracleBase
-oracle.install.client.customComponents=$(if ($installType -eq "Custom") { $customComponents -join "," } else { "" })
-oracle.install.IsBuiltinAccount=true
+oracle.install.IsBuiltInAccount=true
+oracle.install.client.customComponents="$($customComponents -join ",")"
 "@
 
 # Save the Response File
-$responseFileContent | Set-Content -Path $responseFilePath -Encoding UTF8
-Write-Host "Response file created at $responseFilePath"
-
-# Verify Oracle Installer Path
-if (-not (Test-Path -Path $oracleInstallerPath)) {
-    Write-Error "Oracle installer not found at $oracleInstallerPath. Please verify the path."
+try {
+    $responseFileContent | Set-Content -Path $responseFilePath -Encoding UTF8
+    Write-Host "Response file created at $responseFilePath"
+} catch {
+    Write-Error "Failed to create response file: $_"
     exit 1
 }
 
