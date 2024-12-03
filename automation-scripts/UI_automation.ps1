@@ -10,3 +10,5 @@ $notepad = $rootElement.FindFirst([System.Windows.Automation.TreeScope]::Childre
 
 # Output the found window (if any)
 $notepad.Current.Name
+
+[Reflection.Assembly]::LoadWithPartialName("UIAutomationClient").GetTypes()
