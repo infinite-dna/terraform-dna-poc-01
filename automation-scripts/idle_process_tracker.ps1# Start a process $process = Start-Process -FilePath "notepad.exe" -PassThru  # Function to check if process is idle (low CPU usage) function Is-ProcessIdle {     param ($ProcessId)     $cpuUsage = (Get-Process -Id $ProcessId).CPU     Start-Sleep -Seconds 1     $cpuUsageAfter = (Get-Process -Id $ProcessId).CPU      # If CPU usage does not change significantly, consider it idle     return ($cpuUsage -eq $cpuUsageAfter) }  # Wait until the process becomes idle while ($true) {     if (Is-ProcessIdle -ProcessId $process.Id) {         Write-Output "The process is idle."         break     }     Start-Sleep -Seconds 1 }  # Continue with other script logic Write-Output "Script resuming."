@@ -1,0 +1,25 @@
+# Start a process
+$process = Start-Process -FilePath "notepad.exe" -PassThru
+
+# Function to check if process is idle (low CPU usage)
+function Is-ProcessIdle {
+    param ($ProcessId)
+    $cpuUsage = (Get-Process -Id $ProcessId).CPU
+    Start-Sleep -Seconds 1
+    $cpuUsageAfter = (Get-Process -Id $ProcessId).CPU
+
+    # If CPU usage does not change significantly, consider it idle
+    return ($cpuUsage -eq $cpuUsageAfter)
+}
+
+# Wait until the process becomes idle
+while ($true) {
+    if (Is-ProcessIdle -ProcessId $process.Id) {
+        Write-Output "The process is idle."
+        break
+    }
+    Start-Sleep -Seconds 1
+}
+
+# Continue with other script logic
+Write-Output "Script resuming."
