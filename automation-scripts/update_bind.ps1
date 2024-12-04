@@ -40,11 +40,15 @@ if (Get-ChildItem "IIS:\Sites\$SiteName" -ErrorAction SilentlyContinue) {
             New-WebBinding -Name $SiteName -Protocol https -IPAddress $IPAddress -Port $Port -HostHeader $MachineName
             
             # Associate the SSL certificate with the binding
-            Push-Location IIS:\SslBindings
-            New-Item "0.0.0.0!$Port" -Thumbprint $Thumbprint -CertificateStoreName My
-            Pop-Location
-            
-            Write-Host "HTTPS binding with SSL certificate added successfully for $MachineName:$Port"
+            $BindingInfo = "*:$Port:$MachineName"
+            $SslBinding = Get-Item "IIS:\SslBindings\$BindingInfo" -ErrorAction SilentlyContinue
+
+            if (-not $SslBinding) {
+                New-Item "IIS:\SslBindings\$BindingInfo" -Thumbprint $Thumbprint
+                Write-Host "HTTPS binding with SSL certificate added successfully for $MachineName:$Port"
+            } else {
+                Write-Host "SSL binding already exists for $BindingInfo"
+            }
         } else {
             Write-Host "HTTPS binding already exists for $MachineName:$Port"
         }
