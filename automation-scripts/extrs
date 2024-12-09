@@ -1,0 +1,5 @@
+var allElements = mainWindow.FindAll(TreeScope.Descendants, Condition.TrueCondition);
+foreach (AutomationElement element in allElements)
+{
+    Console.WriteLine($"Name: {element.Current.Name}, ControlType: {element.Current.ControlType.ProgrammaticName}");
+}
