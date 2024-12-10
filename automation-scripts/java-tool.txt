@@ -1,0 +1,139 @@
+https://www.oracle.com/java/technologies/downloads/?er=221886
+--Steps
+java -version
+--https://maven.apache.org/
+mvn -version
+C:\Program Files (x86)\Windows Application Driver\WinAppDriver.exe
+Install eclispe
+
+pom.xml
+
+<dependencies>
+    <!-- Appium Java Client -->
+    <dependency>
+        <groupId>io.appium</groupId>
+        <artifactId>java-client</artifactId>
+        <version>8.4.0</version>
+    </dependency>
+
+    <!-- Selenium -->
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-java</artifactId>
+        <version>4.14.0</version>
+    </dependency>
+</dependencies>
+
+
+import io.appium.java_client.windows.WindowsDriver;
+import io.appium.java_client.windows.WindowsElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class InstallerAutomation {
+
+    private static WindowsDriver<WindowsElement> driver;
+
+    public static void main(String[] args) {
+        try {
+            // Set Desired Capabilities
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+            capabilities.setCapability("app", "Path_to_Your_Installer.exe"); // Replace with installer exe path
+            capabilities.setCapability("platformName", "Windows");
+            capabilities.setCapability("deviceName", "WindowsPC");
+
+            // Initialize Windows Driver
+            driver = new WindowsDriver<>(new URL("http://127.0.0.1:4723"), capabilities);
+
+            // Automate the installation process
+            automateInstaller();
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } finally {
+            if (driver != null) {
+                driver.quit();
+            }
+        }
+    }
+
+    private static void automateInstaller() {
+        try {
+            // Wait for the installer window to load
+            Thread.sleep(2000);
+
+            // Select "Financial Institution" Radio Button
+            WebElement financialRadioButton = driver.findElement(By.name("Financial Institution"));
+            financialRadioButton.click();
+
+            // Click "Next"
+            WebElement nextButton = driver.findElement(By.name("Next"));
+            nextButton.click();
+
+            // Handle popup (Click OK)
+            Thread.sleep(1000);
+            WebElement okButton = driver.findElement(By.name("OK"));
+            okButton.click();
+
+            // Select "Default Web Site" in Dropdown
+            WebElement dropdown = driver.findElement(By.accessibilityId("DropdownId"));
+            dropdown.click();
+            WebElement defaultWebSiteOption = driver.findElement(By.name("Default Web Site"));
+            defaultWebSiteOption.click();
+
+            // Enter "CRM/BI Suite Virtual Directory"
+            WebElement virtualDirectoryTextbox = driver.findElement(By.accessibilityId("VirtualDirectoryId"));
+            virtualDirectoryTextbox.sendKeys("cview");
+
+            // Enter "CRM/BI Suite Web Service Name"
+            WebElement webServiceNameTextbox = driver.findElement(By.accessibilityId("WebServiceNameId"));
+            webServiceNameTextbox.sendKeys("cview-web");
+
+            // Click "Next"
+            nextButton = driver.findElement(By.name("Next"));
+            nextButton.click();
+
+            // Select "Oracle" Database Radio Button
+            WebElement oracleRadioButton = driver.findElement(By.name("Oracle"));
+            oracleRadioButton.click();
+
+            // Click "Next"
+            nextButton = driver.findElement(By.name("Next"));
+            nextButton.click();
+
+            // Enter Database Details
+            WebElement dbServerTextbox = driver.findElement(By.accessibilityId("DbServerId"));
+            dbServerTextbox.sendKeys("10.148.142.17");
+
+            WebElement dbPortTextbox = driver.findElement(By.accessibilityId("DbPortId"));
+            dbPortTextbox.sendKeys("1521");
+
+            WebElement dbNameTextbox = driver.findElement(By.accessibilityId("DbNameId"));
+            dbNameTextbox.sendKeys("CRMBI");
+
+            WebElement dbUserTextbox = driver.findElement(By.accessibilityId("DbUserId"));
+            dbUserTextbox.sendKeys("sys");
+
+            WebElement dbPasswordTextbox = driver.findElement(By.accessibilityId("DbPasswordId"));
+            dbPasswordTextbox.sendKeys("C0mm0n#112233");
+
+            // Click "Next" to complete the installation
+            nextButton = driver.findElement(By.name("Next"));
+            nextButton.click();
+
+            System.out.println("Installation Automation Completed Successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+Run the winapp driver
+C:\Program Files (x86)\Windows Application Driver\WinAppDriver.exe
+
