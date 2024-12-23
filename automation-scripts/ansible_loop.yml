@@ -1,0 +1,50 @@
+- name: Loop through sequence numbers and execute tasks
+  hosts: windows
+  tasks:
+    - name: Read maxSequenceNumber from runtimeconfig.ini
+      win_shell: |
+        (Get-Content -Path "C:\runtimeconfig.ini" | ForEach-Object {
+          $_ -match "maxSequenceNumber=(\d+)" | Out-Null
+          $Matches[1]
+        }) -join ""
+      register: max_sequence_output
+
+    - name: Validate and set maxSequenceNumber
+      set_fact:
+        max_sequence_number: "{{ max_sequence_output.stdout | int }}"
+      when: max_sequence_output.stdout | length > 0
+
+    - name: Ensure max_sequence_number is valid
+      fail:
+        msg: "Unable to retrieve maxSequenceNumber from runtimeconfig.ini"
+      when: max_sequence_number is not defined
+
+    - name: Loop through sequence numbers
+      block:
+        - name: Run tasks for each sequence
+          block:
+            - name: Download file using win_get_url
+              win_get_url:
+                url: "http://example.com/file_{{ item }}.zip"
+                dest: "C:\\temp\\file_{{ item }}.zip"
+
+            - name: Unzip file
+              win_unzip:
+                src: "C:\\temp\\file_{{ item }}.zip"
+                dest: "C:\\temp\\unpacked\\{{ item }}"
+
+            - name: Execute PowerShell command
+              win_powershell:
+                script: |
+                  # Example PowerShell script logic
+                  if ($true) { exit 0 }
+                  else { exit 3 }
+              register: ps_result
+              failed_when: ps_result.rc == 3
+
+          rescue:
+            - name: Exit loop on failure
+              fail:
+                msg: "win_powershell returned exit code 3 at sequence {{ item }}"
+
+      with_sequence: start=1 end="{{ max_sequence_number }}"
