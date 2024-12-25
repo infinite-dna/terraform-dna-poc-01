@@ -1,38 +1,51 @@
 param (
-    [string]$folderPath = "C:\Path\To\Your\Scripts"
+    [string]$folderPath
 )
 
-# Function to modify scripts in the folder
-function Add-WriteHost {
+# Check if the folder exists
+if (-Not (Test-Path -Path $folderPath -PathType Container)) {
+    Write-Host "The specified folder path does not exist."
+    exit
+}
+
+# Recursively get all .ps1 files in the folder and subfolders
+$ps1Files = Get-ChildItem -Path $folderPath -Recurse -Filter "*.ps1"
+
+# Function to update the script
+function Update-Script {
     param (
         [string]$filePath
     )
 
-    # Read the script content
-    $content = Get-Content -Path $filePath
+    # Read the content of the file
+    $fileContent = Get-Content -Path $filePath
 
-    # Find all Write-Log commands and add corresponding Write-Host
-    $modifiedContent = $content | ForEach-Object {
-        if ($_ -match 'Write-Log\s*\((.*)\)') {
-            $logString = $matches[1].Trim()
-            # Create the corresponding Write-Host line
-            $writeHostLine = "Write-Host $logString"
-            # Add the Write-Host line before Write-Log
-            "$writeHostLine`r`n$_"
-        } else {
+    # Find the Write-Log or logMessage function
+    $updatedContent = $fileContent | ForEach-Object {
+        if ($_ -match 'function (Write-Log|logMessage)') {
+            # Add Write-Host $Message as the last line in the function
+            $functionIndex = [array]::IndexOf($fileContent, $_)
+            $functionLines = $fileContent[$functionIndex..($fileContent.Length - 1)]
+            $lastLine = $functionLines[-1]
+            
+            if ($lastLine -notmatch 'Write-Host \$Message') {
+                $updatedContent = $fileContent[0..($functionIndex + $functionLines.Length - 2)] + 'Write-Host $Message' + $fileContent[($functionIndex + $functionLines.Length - 1)..($fileContent.Length - 1)]
+                $updatedContent
+            } else {
+                $fileContent
+            }
+        }
+        else {
             $_
         }
     }
 
-    # Write the modified content back to the file
-    Set-Content -Path $filePath -Value $modifiedContent
-    Write-Output "Modified script: $filePath"
+    # Write the updated content back to the file
+    Set-Content -Path $filePath -Value $updatedContent
 }
 
-# Get all PowerShell script files in the folder (including subfolders)
-$scriptFiles = Get-ChildItem -Path $folderPath -Recurse -Filter *.ps1
-
-# Modify each script
-foreach ($scriptFile in $scriptFiles) {
-    Add-WriteHost -filePath $scriptFile.FullName
+# Process each .ps1 file
+foreach ($ps1File in $ps1Files) {
+    Update-Script -filePath $ps1File.FullName
+    Write-Host "Updated file: $($ps1File.FullName)"
 }
