@@ -17,3 +17,7 @@
         content: "{{ cert.certificates[0].cer }}"  # The base64-encoded certificate
         dest: "/path/to/save/certificate.pem"
         mode: '0644'
+
+
+#$KeyVaultName = ($KeyVaultUri -replace "https://", "") -split "\.vault.azure.net" | Select-Object -First 1
+
