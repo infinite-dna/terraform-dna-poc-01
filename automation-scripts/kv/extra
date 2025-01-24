@@ -1,15 +1,19 @@
-- name: Check if the certificate already exists in the store
-  ansible.windows.win_shell: |
-    $store = New-Object System.Security.Cryptography.X509Certificates.X509Store -ArgumentList "My", "LocalMachine"
-    $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly)
-    $certExists = $store.Certificates | Where-Object { $_.Thumbprint -eq "{{ cert_data.thumbprint }}" }
-    $store.Close()
-    if ($certExists) {
-      Write-Output "Certificate already exists."
-      exit 0
-    }
-    exit 1
-  args:
-    executable: powershell
-  register: cert_check
-  failed_when: cert_check.rc != 0 and cert_check.stdout != "Certificate already exists."
+- name: Retrieve certificate from Azure Key Vault using Vault URI
+  hosts: localhost
+  tasks:
+    - name: Get certificate from Key Vault
+      azure.azcollection.azure_rm_keyvault:
+        vault_uri: "https://<your-keyvault-name>.vault.azure.net/"  # Key Vault URI
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        tenant: "{{ tenant }}"
+        certificates:
+          - name: "<your-certificate-name>"
+            export: true  # Set to true to export the certificate
+      register: cert
+
+    - name: Write certificate to file
+      copy:
+        content: "{{ cert.certificates[0].cer }}"  # The base64-encoded certificate
+        dest: "/path/to/save/certificate.pem"
+        mode: '0644'
