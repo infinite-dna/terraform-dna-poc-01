@@ -17,6 +17,7 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$CertPassword  # The password for the PFX file (if needed)
 )
+Install-Module -Name Az -AllowClobber -Force -SkipPublisherCheck
 
 # Authenticate using the Service Principal
 $SecureClientSecret = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
