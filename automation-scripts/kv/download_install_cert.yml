@@ -1,0 +1,61 @@
+---
+- name: Download and install a certificate from Azure Key Vault
+  hosts: windows_vms
+  vars:
+    vault_uri: "https://<your-vault-name>.vault.azure.net/"
+    certificate_name: "<your-certificate-name>"
+    output_cert_path: "C:\\Temp\\downloaded_cert.pfx"
+    cert_password: "<your-cert-password>"  # Set the password for the PFX file
+    sp_client_id: "<your-service-principal-client-id>"
+    sp_client_secret: "<your-service-principal-client-secret>"
+    tenant_id: "<your-tenant-id>"
+  tasks:
+    - name: Ensure Temp directory exists
+      ansible.windows.win_shell: |
+        if (!(Test-Path -Path "C:\\Temp")) {
+          New-Item -Path "C:\\Temp" -ItemType Directory
+        }
+
+    - name: Download certificate from Azure Key Vault
+      azure.azcollection.azure_keyvault_secret:
+        vault_url: "{{ vault_uri }}"
+        secret_name: "{{ certificate_name }}"
+        secret_version: ""
+        ad_user: "{{ sp_client_id }}"
+        password: "{{ sp_client_secret }}"
+        tenant: "{{ tenant_id }}"
+      register: cert_data
+
+    - name: Save the certificate to a file
+      ansible.windows.win_copy:
+        content: "{{ cert_data.value | b64decode }}"
+        dest: "{{ output_cert_path }}"
+
+    - name: Check if the certificate already exists in the store
+      ansible.windows.win_shell: |
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store -ArgumentList "My", "LocalMachine"
+        $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly)
+        $certExists = $store.Certificates | Where-Object { $_.Thumbprint -eq "{{ cert_data.thumbprint }}" }
+        $store.Close()
+        if ($certExists) {
+          Write-Output "Certificate already exists."
+          exit 0
+        }
+        exit 1
+      args:
+        executable: powershell
+      register: cert_check
+      failed_when: cert_check.rc != 0 and cert_check.stdout != "Certificate already exists."
+
+    - name: Install the certificate if not present
+      ansible.windows.win_shell: |
+        $certPassword = ConvertTo-SecureString -String "{{ cert_password }}" -Force -AsPlainText
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $cert.Import("{{ output_cert_path }}", $certPassword, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::PersistKeySet)
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store -ArgumentList "My", "LocalMachine"
+        $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
+        $store.Add($cert)
+        $store.Close()
+      args:
+        executable: powershell
+      when: cert_check.rc != 0
