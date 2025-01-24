@@ -1,0 +1,11 @@
+---
+gather_facts: false
+
+vars:
+  vault_uri: "<+secrets.getValue('key_vault_uri')>"
+  certificate_name: "<+secrets.getValue('wild_crd_cert_name')>"
+  output_cert_path: "C:/Temp/wild_card_cert.pfx"  # Use forward slashes or escaped backslashes
+  cert_password: "<+secrets.getValue('wild_crd_cert_pwd')>"  # Quoted properly and corrected variable name
+  sp_client_id: "<+secrets.getValue('AZURE_DNA_CLIENT_ID')>"
+  sp_client_secret: "<+secrets.getValue('AZURE_DNA_CLIENT_SECRET')>"
+  tenant_id: "<+secrets.getValue('AZURE_DNA_TENANT_ID')>"
