@@ -17,7 +17,6 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$CertPassword  # The password for the PFX file (if needed)
 )
-Install-Module -Name Az -AllowClobber -Force -SkipPublisherCheck
 
 # Authenticate using the Service Principal
 $SecureClientSecret = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
@@ -25,14 +24,20 @@ $Credential = New-Object System.Management.Automation.PSCredential($ClientId, $S
 
 Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
 
-# Fetch the certificate from Azure Key Vault
-$cert = Get-AzKeyVaultCertificate -VaultUri $KeyVaultUri -Name $CertName
+# Extract Key Vault name from Key Vault URI
+$KeyVaultName = ($KeyVaultUri -replace "https://", "") -split "\.vault.azure.net" | Select-Object -First 1
+
+# Fetch the certificate as a secret from Azure Key Vault
+$secret = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $CertName
+
+# The secret value contains the Base64-encoded PFX certificate
+$base64Cert = $secret.SecretValueText
 
 # Define the local path to store the downloaded certificate
 $certPath = "$env:temp\$CertName.pfx"
 
-# Export the certificate as a PFX file (use the password if required)
-$certExport = Export-AzKeyVaultCertificate -VaultUri $KeyVaultUri -Name $CertName -FilePath $certPath -Password (ConvertTo-SecureString -String $CertPassword -AsPlainText -Force)
+# Decode the Base64 string and write the certificate to a .pfx file
+[System.IO.File]::WriteAllBytes($certPath, [Convert]::FromBase64String($base64Cert))
 
 # Check if the certificate is already installed
 $certThumbprint = Get-FileHash -Path $certPath -Algorithm SHA1 | Select-Object -ExpandProperty Hash
