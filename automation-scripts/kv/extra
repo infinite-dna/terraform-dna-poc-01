@@ -33,3 +33,8 @@
   loop: "{{ all_secrets.secrets }}"
   when: "'_' not in item.name"
 
+
+- name: Remove secrets where name does not contain `_`
+  set_fact:
+    filtered_secrets: "{{ all_secrets.secrets | selectattr('name', 'search', '_') | list }}"
+
