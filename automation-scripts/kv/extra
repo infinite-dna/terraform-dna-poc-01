@@ -21,3 +21,15 @@
 
 #$KeyVaultName = ($KeyVaultUri -replace "https://", "") -split "\.vault.azure.net" | Select-Object -First 1
 
+
+
+- name: Filter secrets and remove `id` where name does not contain `_`
+  set_fact:
+    filtered_secrets: >-
+      {{
+        all_secrets.secrets | map('combine', {"id": None}) |
+        list if "_" not in item.name else all_secrets.secrets
+      }}
+  loop: "{{ all_secrets.secrets }}"
+  when: "'_' not in item.name"
+
