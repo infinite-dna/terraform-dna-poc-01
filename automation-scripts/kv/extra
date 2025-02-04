@@ -41,3 +41,21 @@
 
  all_secrets: "{{ all_secrets.secrets | selectattr('sid', 'search', '.*/[^/]*-.*$') | list }}"
 
+
+
+
+
+    - name: Extract and filter secrets where basename contains `-`
+      set_fact:
+        all_secrets: >-
+          {{
+            all_secrets.secrets
+            | selectattr('sid', 'defined') 
+            | selectattr('sid', 'search', '.*/([^/]*)$')  # Extracts last part
+            | selectattr('sid', 'search', '-')
+            | list
+          }}
+
+    - name: Debug - Show filtered secrets
+      debug:
+        var: all_secrets
