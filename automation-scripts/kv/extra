@@ -38,3 +38,6 @@
   set_fact:
     filtered_secrets: "{{ all_secrets.secrets | selectattr('name', 'search', '_') | list }}"
 
+
+ all_secrets: "{{ all_secrets.secrets | selectattr('sid', 'search', '.*/[^/]*-.*$') | list }}"
+
