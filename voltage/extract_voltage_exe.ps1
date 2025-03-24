@@ -32,10 +32,11 @@ if (!(Test-Path $extractPath)) {
     Log-Message "Extraction folder already exists: $extractPath"
 }
 
-# Run the EXE with silent extraction
-Log-Message "Running EXE: $exePath"
+# Run the EXE silently
+Log-Message "Running EXE silently: $exePath"
 try {
-    Start-Process -FilePath $exePath -ArgumentList "/extract:$extractPath /silent /norestart" -NoNewWindow -Wait
+    $process = Start-Process -FilePath $exePath -ArgumentList "/extract:$extractPath /silent /norestart" -NoNewWindow -PassThru -WindowStyle Hidden
+    $process | Wait-Process  # Ensure script waits for completion
     Log-Message "Extraction completed successfully."
 } catch {
     Log-Message "ERROR: Failed to execute EXE - $_"
