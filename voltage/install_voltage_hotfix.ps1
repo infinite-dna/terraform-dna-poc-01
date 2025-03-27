@@ -1,6 +1,6 @@
 $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 
-$arguments = "/s /v\"/1*V \"C:\Program Files\Open Solutions Installation Information\DNA4\Log_$timestamp.txt\" ENVNAME=\"PROD, BKTEST001D\" DMCONNECTSTRING=\"Data Source=10.219.149.7:1521/BKTest001D; User Id=DEPLOYMGR;Password=deploymgr\" CLIENTONLY=FALSE /Quiet\""
+$arguments = "/s /v\"/l*v \"C:\Program Files\Open Solutions Installation Information\DNA4\Log_$timestamp.txt\" ENVNAME=\"PROD, BKTEST001D\" DMCONNECTSTRING=\"Data Source=10.219.149.7:1521/BKTest001D; User Id=DEPLOYMGR;Password=deploymgr\" CLIENTONLY=FALSE /Quiet\""
 
 $process = Start-Process -FilePath "Setup.exe" -ArgumentList $arguments -NoNewWindow -PassThru
 
