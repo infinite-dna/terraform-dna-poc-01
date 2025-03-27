@@ -3,7 +3,7 @@ $logPath = "C:\Program Files\Open Solutions Installation Information\DNA4\Log_$t
 
 $command = "Setup.exe /s /v`"/1*V \"$logPath\" ENVNAME=\"PROD, BKTEST001D\" DMCONNECTSTRING=\"Data Source=10.219.149.7:1521/BKTest001D; User Id=DEPLOYMGR;Password=deploymgr\" CLIENTONLY=FALSE /Quiet`""
 
-$process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c $command" -NoNewWindow -PassThru
+$process = Start-Process -FilePath "Setup.exe" -ArgumentList "/s /v`"/1*V \"$logPath\" ENVNAME=\"PROD, BKTEST001D\" DMCONNECTSTRING=\"Data Source=10.219.149.7:1521/BKTest001D; User Id=DEPLOYMGR;Password=deploymgr\" CLIENTONLY=FALSE /Quiet`"" -NoNewWindow -PassThru
 $process.WaitForExit(600000)  # Wait for a maximum of 10 minutes (600000 ms)
 
 if ($process.HasExited) {
