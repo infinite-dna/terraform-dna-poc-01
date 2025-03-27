@@ -1,10 +1,12 @@
 $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $logPath = "C:\Program Files\Open Solutions Installation Information\DNA4\Log_$timestamp.txt"
 
-$command = "Setup.exe /s /v`"/1*V \"$logPath\" ENVNAME=\"PROD, BKTEST001D\" DMCONNECTSTRING=\"Data Source=10.219.149.7:1521/BKTest001D; User Id=DEPLOYMGR;Password=deploymgr\" CLIENTONLY=FALSE /Quiet`""
+$arguments = "/s /v\"/1*V \"$logPath\" ENVNAME=\"PROD, BKTEST001D\" DMCONNECTSTRING=\"Data Source=10.219.149.7:1521/BKTest001D; User Id=DEPLOYMGR;Password=deploymgr\" CLIENTONLY=FALSE /Quiet\""
 
-$process = Start-Process -FilePath "Setup.exe" -ArgumentList "/s /v`"/1*V \"$logPath\" ENVNAME=\"PROD, BKTEST001D\" DMCONNECTSTRING=\"Data Source=10.219.149.7:1521/BKTest001D; User Id=DEPLOYMGR;Password=deploymgr\" CLIENTONLY=FALSE /Quiet`"" -NoNewWindow -PassThru
-$process.WaitForExit(600000)  # Wait for a maximum of 10 minutes (600000 ms)
+$process = Start-Process -FilePath "Setup.exe" -ArgumentList $arguments -NoNewWindow -PassThru
+
+# Wait for a maximum of 10 minutes (600000 ms)
+$process | Wait-Process -Timeout 600
 
 if ($process.HasExited) {
     if ($process.ExitCode -eq 0) {
