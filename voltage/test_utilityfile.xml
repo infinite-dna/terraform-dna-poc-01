@@ -1,0 +1,24 @@
+<XML>
+<FIELDGROUPS>
+	<FIELDGROUP NAME="IdAndFileData" CryptId="GenericText_internal">
+		<FIELD schemaname="OSIBANK" tablename="table1"/>
+		<FIELD schemaname="OSIBANK"/>
+	</FIELDGROUP>
+	<FIELDGROUP NAME="CardANdExtActNumber" CryptId="GenericText_internal">
+		<FIELD schemaname="OSIBANK"/>
+		<FIELD schemaname="OSIBANK" tablename="table2"/>
+	</FIELDGROUP>
+	<FIELDGROUP NAME="BinaryObject" CryptId="GenericText_internal">
+		<FIELD schemaname="deploymgr"/>
+		<FIELD schemaname="OSIBANK"/>
+	</FIELDGROUP>
+	<FIELDGROUP NAME="DocumentObject" CryptId="GenericText_internal">
+		<FIELD schemaname="deploymgr"/>
+		<FIELD schemaname="OSIBANK"/>
+	</FIELDGROUP>
+	<FIELDGROUP NAME="AllotmentNumber" CryptId="GenericText_internal">
+		<FIELD schemaname="deploymgr"/>
+		<FIELD schemaname="OSIBANK"/>
+	</FIELDGROUP>
+</FIELDGROUPS>
+</XML>
