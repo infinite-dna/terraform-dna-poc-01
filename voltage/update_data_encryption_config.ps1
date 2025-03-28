@@ -7,13 +7,16 @@ $newValue = "C:\programfiles\xyz\abc\pqr"
 # Load the XML file
 [xml]$xml = Get-Content -Path $xmlFilePath
 
-# Update the <mytestValue> field
-$node = $xml.SelectSingleNode("//mytestValue")
+# Find the <ad> element with key="mytestvalue"
+$node = $xml.SelectSingleNode("//config/appsettings/ad[@key='mytestvalue']")
+
 if ($node -ne $null) {
-    $node.InnerText = $newValue
+    # Update the value attribute
+    $node.SetAttribute("value", $newValue)
+    
     # Save the updated XML file
     $xml.Save($xmlFilePath)
     Write-Output "XML file updated successfully."
 } else {
-    Write-Output "<mytestValue> node not found in the XML file."
+    Write-Output "Node with key='mytestvalue' not found in the XML file."
 }
