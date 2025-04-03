@@ -9,8 +9,12 @@ $ConfigContent = Get-Content -Path $ConfigFile | ForEach-Object {
     @{ Key = $key.Trim(); Value = $value.Trim() }
 } | Group-Object -AsHashTable -AsString
 
-$CertPath = $ConfigContent["certURL"]
+$CertURL = $ConfigContent["certURL"]
 $CertPassword = $ConfigContent["certPassword"] | ConvertTo-SecureString -AsPlainText -Force
+$CertPath = "C:\voltage\temp\certificate.pfx"
+
+# Download the certificate
+Invoke-WebRequest -Uri $CertURL -OutFile $CertPath
 
 # Import the certificate
 $Cert = Import-PfxCertificate -FilePath $CertPath -Password $CertPassword -CertStoreLocation "Cert:\LocalMachine\My"
