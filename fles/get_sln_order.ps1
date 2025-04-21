@@ -42,7 +42,9 @@ function TopoSort {
         $result += $node
     }
 
-    foreach ($node in $graph.Keys) {
+    # Fix: clone the keys to prevent modification during iteration
+    $nodes = @($graph.Keys)
+    foreach ($node in $nodes) {
         Visit $node
     }
 
@@ -59,7 +61,7 @@ if (-not (Test-Path $SolutionPath)) {
 $projects = @{}
 $slnDir = Split-Path $SolutionPath -Parent
 
-# Step 1: Extract project paths from .sln
+# Step 1: Extract project paths from the .sln file
 Get-Content $SolutionPath | ForEach-Object {
     if ($_ -match '^Project\(".*"\) = ".*", "(.*)", ".*"$') {
         $projRelPath = $matches[1]
