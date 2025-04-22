@@ -1,7 +1,7 @@
 Add-Type -AssemblyName PresentationFramework
 
 [xml]$xaml = @"
-<Window xmlns=http://schemas.microsoft.com/winfx/2006/xaml/presentation
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         Title="RDP Connection Manager" Height="500" Width="750">
     <Grid Margin="10">
         <Grid.RowDefinitions>
